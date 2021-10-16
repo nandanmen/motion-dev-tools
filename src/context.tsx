@@ -3,19 +3,13 @@ import React from "react";
 import { styled } from "./stitches";
 import { PropsForm } from "./props-form";
 
-type State =
-  | {
-      state: "IDLE";
-    }
-  | {
-      state: "WAIT";
-      uuid: string;
-    }
-  | {
-      state: "ACTIVE";
-      uuid: string;
-      props: Record<string, any>; // things like `animate`, `initial`, `variants`, etc.
-    };
+type State = "ACTIVE" | "WAIT_REPLAY" | "IDLE" | "WAIT";
+
+type ToolState = {
+  state: State;
+  uuid?: string;
+  props?: Record<string, any>; // things like `animate`, `initial`, `variants`, etc.
+};
 
 type Event =
   | {
@@ -28,16 +22,28 @@ type Event =
     }
   | {
       type: "CLOSE";
+    }
+  | {
+      type: "REPLAY";
+    }
+  | {
+      type: "ANIMATION_DONE";
     };
 
 type SendFunction = (event: Event) => void;
 
-type ToolContext = State & { send: SendFunction };
+type ToolContext = ToolState & { send: SendFunction };
 
 const Context = React.createContext<ToolContext | undefined>(undefined);
 
+function isActiveState(state: string): boolean {
+  return ["ACTIVE", "WAIT_REPLAY"].includes(state);
+}
+
 export const MotionDevTool = ({ children }: { children: React.ReactNode }) => {
-  const [toolState, setToolState] = React.useState<State>({ state: "IDLE" });
+  const [toolState, setToolState] = React.useState<ToolState>({
+    state: "IDLE",
+  });
 
   const send = (event: Event) => {
     switch (toolState.state) {
@@ -79,6 +85,26 @@ export const MotionDevTool = ({ children }: { children: React.ReactNode }) => {
             });
             return;
           }
+          case "REPLAY": {
+            setToolState({
+              ...toolState,
+              state: "WAIT_REPLAY",
+            });
+            return;
+          }
+          default:
+            return;
+        }
+      }
+      case "WAIT_REPLAY": {
+        switch (event.type) {
+          case "ANIMATION_DONE": {
+            setToolState({
+              ...toolState,
+              state: "ACTIVE",
+            });
+            return;
+          }
           default:
             return;
         }
@@ -110,12 +136,13 @@ export const MotionDevTool = ({ children }: { children: React.ReactNode }) => {
         <Debug>
           <pre>{JSON.stringify(toolState, null, 2)}</pre>
         </Debug>
-        {toolState.state === "ACTIVE" && (
+        {isActiveState(toolState.state) && (
           <PropsForm
-            props={toolState.props}
+            props={toolState.props ?? {}}
             onChange={(props) => send({ type: "UPDATE_PROPS", props })}
           />
         )}
+        <button onClick={() => send({ type: "REPLAY" })}>Replay</button>
       </ControlPanel>
     </Context.Provider>
   );

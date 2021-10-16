@@ -6,19 +6,32 @@ import { useMotionDevToolContext } from "./context";
 
 export function Motion({ as = "div", ...props }) {
   const [id] = React.useState(uuid());
+  const [key, setKey] = React.useState(uuid());
   const context = useMotionDevToolContext();
 
   React.useEffect(() => {
-    if (context.state === "WAIT" && context.uuid === id) {
-      context.send({
-        type: "UPDATE_PROPS",
-        props,
-      });
+    if ("uuid" in context && context.uuid === id) {
+      switch (context.state) {
+        case "WAIT": {
+          context.send({
+            type: "UPDATE_PROPS",
+            props,
+          });
+          break;
+        }
+        case "WAIT_REPLAY": {
+          setKey(uuid());
+          context.send({
+            type: "ANIMATION_DONE",
+          });
+          break;
+        }
+      }
     }
   }, [context]);
 
   const realProps = context.state === "ACTIVE" ? context.props : props;
 
   const Component = baseMotion[as];
-  return <Component data-id={id} {...realProps} />;
+  return <Component data-id={id} key={key} {...realProps} />;
 }

@@ -60,3 +60,36 @@ The problem is updating `initial` doesn't _appear_ to do anything even though it
 This is because `initial` only makes a difference when the component initially mounts, whereas the approach I'm using simply rerenders the given component. Another issue is that updating `animate` doesn't really tell me what the final animation will look like - only where the element will end up in the end.
 
 What would be more useful would be if the animation is replayed from the beginning (i.e. from `initial` to `animate`) every time we change the values in the control panel.
+
+To force the animation to replay, we need to remount the component. We can force a remount of the component using the `key` prop like so:
+
+```jsx
+export function Motion({ as = "div", ...props }) {
+  const [key, setKey] = React.useState(uuid());
+  const context = useMotionDevToolContext();
+
+  const realProps = context.state === "ACTIVE" ? context.props : props;
+
+  /**
+   * Every time the props we pass change, update the key to replay the 
+   * animation from the start. We use `uuid` as the key to ensure our key is 
+   * unique across the whole app.
+   */ 
+  React.useEffect(() => {
+    setKey(uuid());
+  }, [realProps]);
+
+  const Component = baseMotion[as];
+  return <Component key={key} {...realProps} />;
+}
+```
+
+This turned out to be a bit jittery, so I changed this to be a "Replay" button instead:
+
+![](demos/oct-16-2021_replay-button.gif)
+
+The implementation is a bit different, but it relies on the same principle of updating the key to modify the animation.
+
+1. When the replay button is pressed, the state gets updated to `WAIT_REPLAY`. 
+2. The motion component listens to that state change and remounts the component by updating the `key` prop.
+3. The motion component updates the control state back to `ACTIVE` by sending a `ANIMATION_DONE` event.

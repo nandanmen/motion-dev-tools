@@ -11,6 +11,7 @@ export function PropsForm({ props, onChange }: PropsFormProps) {
   const validProps = Object.entries(props).filter(([propName]) =>
     VALID_PROPS.has(propName)
   );
+
   return (
     <form>
       {validProps.map(([propName, values]) => {
