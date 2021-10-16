@@ -44,3 +44,11 @@ TODO
 
 - `motion` doesn't build all possible html elements; instead, each element is generated using a `createMotionComponent` function and later cached.
   - This means you can't simply iterate over all elements and wrap them
+
+## Notes
+
+### c4e5e40
+
+I'm able to get a working version that allows me to update the _end_ animation of the component using a slider:
+
+![](demos/oct-16-2021_initial-commit.gif)

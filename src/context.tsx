@@ -133,7 +133,7 @@ const ControlPanel = styled("div", {
   padding: "8px",
   borderRadius: "8px",
   border: "2px solid $colors$gray8",
-  maxWidth: "calc(100vw - 16px)",
+  width: "20rem",
 });
 
 export const useMotionDevToolContext = (): ToolContext => {
