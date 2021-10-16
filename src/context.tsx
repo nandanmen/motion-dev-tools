@@ -107,7 +107,9 @@ export const MotionDevTool = ({ children }: { children: React.ReactNode }) => {
       {children}
       <ControlPanel>
         <h1>Controls</h1>
-        <Debug>{JSON.stringify(toolState, null, 2)}</Debug>
+        <Debug>
+          <pre>{JSON.stringify(toolState, null, 2)}</pre>
+        </Debug>
         {toolState.state === "ACTIVE" && (
           <PropsForm
             props={toolState.props}
@@ -133,7 +135,6 @@ const ControlPanel = styled("div", {
   padding: "8px",
   borderRadius: "8px",
   border: "2px solid $colors$gray8",
-  width: "20rem",
 });
 
 export const useMotionDevToolContext = (): ToolContext => {
