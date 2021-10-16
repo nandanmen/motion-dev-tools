@@ -42,6 +42,8 @@ export function Motion({ as = "div", ...props }) {
         <InitialBox
           className={props.className}
           style={{ x: initial.x, y: initial.y }}
+          animate={{ opacity: 1 }}
+          initial={{ opacity: 0 }}
         />
       )}
       <Component data-name="Box" data-id={id} key={key} {...realProps} />
@@ -54,7 +56,7 @@ const Wrapper = styled("div", {
 });
 
 const InitialBox = styled(baseMotion.div, {
-  border: "2px dashed $colors$gray7",
+  border: "2px dashed $colors$gray9",
   background: "transparent !important",
   position: "absolute",
 });

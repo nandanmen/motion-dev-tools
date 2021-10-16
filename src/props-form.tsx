@@ -13,10 +13,10 @@ export function PropsForm({ props, onChange }: PropsFormProps) {
   );
 
   return (
-    <form>
+    <Form>
       {validProps.map(([propName, values]) => {
         return (
-          <fieldset key={propName}>
+          <Fieldset key={propName}>
             <Label>{propName}</Label>
             {Object.entries(values).map(([key, value]) => {
               return (
@@ -40,12 +40,23 @@ export function PropsForm({ props, onChange }: PropsFormProps) {
                 </Label>
               );
             })}
-          </fieldset>
+          </Fieldset>
         );
       })}
-    </form>
+    </Form>
   );
 }
+
+const Form = styled("form", {
+  "> :not(:last-child)": {
+    marginBottom: "16px",
+  },
+});
+
+const Fieldset = styled("fieldset", {
+  outline: "none",
+  border: "none",
+});
 
 const Label = styled("label", {
   display: "block",

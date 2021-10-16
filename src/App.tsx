@@ -24,7 +24,7 @@ const Box = styled(Motion, {
   width: "10rem",
   height: "10rem",
   borderRadius: "8px",
-  background: "$gray7",
+  background: "$gray9",
 });
 
 export default App;

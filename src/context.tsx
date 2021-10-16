@@ -1,4 +1,6 @@
 import React from "react";
+import { motion } from "framer-motion";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 import { styled } from "./stitches";
 import { PropsForm } from "./props-form";
@@ -81,8 +83,8 @@ export const MotionDevTool = ({ children }: { children: React.ReactNode }) => {
           }
           case "UPDATE_PROPS": {
             setToolState({
+              ...toolState,
               state: "ACTIVE",
-              uuid: toolState.uuid,
               props: event.props,
             });
             return;
@@ -133,22 +135,37 @@ export const MotionDevTool = ({ children }: { children: React.ReactNode }) => {
   return (
     <Context.Provider value={{ ...toolState, send }}>
       {children}
-      <ControlPanel>
-        <h1>Controls</h1>
-        <Debug>
-          <pre>{JSON.stringify(toolState, null, 2)}</pre>
-        </Debug>
-        {isActiveState(toolState.state) && (
+      {isActiveState(toolState.state) && (
+        <ControlPanel
+          animate={{ x: 0, opacity: 1 }}
+          initial={{ x: -20, opacity: 0 }}
+        >
+          <ComponentName>{toolState.name}</ComponentName>
           <PropsForm
             props={toolState.props ?? {}}
             onChange={(props) => send({ type: "UPDATE_PROPS", props })}
           />
-        )}
-        <button onClick={() => send({ type: "REPLAY" })}>Replay</button>
-      </ControlPanel>
+          <Button onClick={() => send({ type: "REPLAY" })}>
+            <ReloadIcon />
+          </Button>
+        </ControlPanel>
+      )}
     </Context.Provider>
   );
 };
+
+const Button = styled("button", {
+  background: "$gray4",
+  outline: "none",
+  border: "none",
+  padding: "6px",
+  borderRadius: "6px",
+  marginTop: "16px",
+});
+
+const ComponentName = styled("p", {
+  marginBottom: "16px",
+});
 
 const Debug = styled("div", {
   background: "$gray6",
@@ -157,13 +174,14 @@ const Debug = styled("div", {
   fontFamily: "SF Mono",
 });
 
-const ControlPanel = styled("div", {
+const ControlPanel = styled(motion.div, {
   position: "fixed",
   top: "8px",
   left: "8px",
-  padding: "8px",
+  padding: "20px",
   borderRadius: "8px",
   border: "2px solid $colors$gray8",
+  fontFamily: "SF Mono, monospace",
 });
 
 export const useMotionDevToolContext = (): ToolContext => {
