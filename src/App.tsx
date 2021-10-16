@@ -6,7 +6,7 @@ function App() {
   return (
     <MotionDevTool>
       <Main>
-        <Box animate={{ y: 0 }} initial={{ y: 60 }} />
+        <Box animate={{ y: 0, x: 0 }} initial={{ y: 60, x: 60 }} />
       </Main>
     </MotionDevTool>
   );

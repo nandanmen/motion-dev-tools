@@ -1,5 +1,7 @@
 import React from "react";
 import { motion as baseMotion } from "framer-motion";
+
+import { styled } from "./stitches";
 import { v4 as uuid } from "uuid";
 
 import { useMotionDevToolContext } from "./context";
@@ -31,7 +33,28 @@ export function Motion({ as = "div", ...props }) {
   }, [context]);
 
   const realProps = context.state === "ACTIVE" ? context.props : props;
+  const { initial } = realProps;
 
   const Component = baseMotion[as];
-  return <Component data-id={id} key={key} {...realProps} />;
+  return (
+    <Wrapper>
+      {initial && context.state === "ACTIVE" && (
+        <InitialBox
+          className={props.className}
+          style={{ x: initial.x, y: initial.y }}
+        />
+      )}
+      <Component data-name="Box" data-id={id} key={key} {...realProps} />
+    </Wrapper>
+  );
 }
+
+const Wrapper = styled("div", {
+  position: "relative",
+});
+
+const InitialBox = styled(baseMotion.div, {
+  border: "2px dashed $colors$gray7",
+  background: "transparent !important",
+  position: "absolute",
+});

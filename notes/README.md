@@ -93,3 +93,25 @@ The implementation is a bit different, but it relies on the same principle of up
 1. When the replay button is pressed, the state gets updated to `WAIT_REPLAY`. 
 2. The motion component listens to that state change and remounts the component by updating the `key` prop.
 3. The motion component updates the control state back to `ACTIVE` by sending a `ANIMATION_DONE` event.
+
+This approach still has the problem of not having feedback for the `initial` slider. How do we create a good experience for adjusting the `initial` slider?
+
+My solution is to add a transparent box that represents the initial position of the element you're animating:
+
+![](demos/oct-16-2021_initial-box.gif)
+
+For the sake of this POC, I added a wrapper around the underlying motion component in order to correctly render the transparent box:
+
+```tsx
+<Wrapper>
+  {initial && (
+    <InitialBox
+      className={props.className}
+      style={{ x: initial.x, y: initial.y }}
+    />
+  )}
+  <Component data-id={id} key={key} {...realProps} />
+</Wrapper>
+```
+
+The issue with this is that our custom motion wrapper doesn't render exactly what the original motion component does. This may cause issues if the wrapper expects a certain DOM structure.

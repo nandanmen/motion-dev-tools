@@ -8,6 +8,7 @@ type State = "ACTIVE" | "WAIT_REPLAY" | "IDLE" | "WAIT";
 type ToolState = {
   state: State;
   uuid?: string;
+  name?: string;
   props?: Record<string, any>; // things like `animate`, `initial`, `variants`, etc.
 };
 
@@ -15,6 +16,7 @@ type Event =
   | {
       type: "CLICK";
       uuid: string;
+      name: string;
     }
   | {
       type: "UPDATE_PROPS";
@@ -50,7 +52,7 @@ export const MotionDevTool = ({ children }: { children: React.ReactNode }) => {
       case "IDLE": {
         switch (event.type) {
           case "CLICK": {
-            setToolState({ state: "WAIT", uuid: event.uuid });
+            setToolState({ state: "WAIT", uuid: event.uuid, name: event.name });
             return;
           }
           default:
@@ -61,8 +63,8 @@ export const MotionDevTool = ({ children }: { children: React.ReactNode }) => {
         switch (event.type) {
           case "UPDATE_PROPS": {
             setToolState({
+              ...toolState,
               state: "ACTIVE",
-              uuid: toolState.uuid,
               props: event.props,
             });
             return;
@@ -119,7 +121,7 @@ export const MotionDevTool = ({ children }: { children: React.ReactNode }) => {
       const el = evt.target as HTMLElement;
       const id = el?.dataset.id;
       if (!id) return;
-      send({ type: "CLICK", uuid: id });
+      send({ type: "CLICK", uuid: id, name: el.dataset.name as string });
     }
 
     document.addEventListener("click", onClick);
