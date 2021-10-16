@@ -19,7 +19,7 @@ export function PropsForm({ props, onChange }: PropsFormProps) {
             <Label>{propName}</Label>
             {Object.entries(values).map(([key, value]) => {
               return (
-                <Label>
+                <Label key={key}>
                   {key}
                   <input
                     type="range"

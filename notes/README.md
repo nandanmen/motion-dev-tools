@@ -47,8 +47,16 @@ TODO
 
 ## Notes
 
-### c4e5e40
+### Oct 16 2021
 
 I'm able to get a working version that allows me to update the _end_ animation of the component using a slider:
 
 ![](demos/oct-16-2021_initial-commit.gif)
+
+The problem is updating `initial` doesn't _appear_ to do anything even though it's updating the props correctly:
+
+![](demos/oct-16-2021_update-initial-prop.gif)
+
+This is because `initial` only makes a difference when the component initially mounts, whereas the approach I'm using simply rerenders the given component. Another issue is that updating `animate` doesn't really tell me what the final animation will look like - only where the element will end up in the end.
+
+What would be more useful would be if the animation is replayed from the beginning (i.e. from `initial` to `animate`) every time we change the values in the control panel.
