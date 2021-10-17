@@ -1,9 +1,8 @@
 import React from "react";
 import { motion as baseMotion } from "framer-motion";
-
-import { styled } from "./stitches";
 import { v4 as uuid } from "uuid";
 
+import { styled } from "./stitches";
 import { useMotionDevToolContext } from "./context";
 
 export function Motion({ as = "div", ...props }) {
