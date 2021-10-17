@@ -1,11 +1,10 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { ReloadIcon } from "@radix-ui/react-icons";
 import { produce } from "immer";
+import _ from "lodash";
 
 import { styled } from "./stitches";
 import { PropsForm } from "./props-form";
-import _ from "lodash";
 
 type State = "ACTIVE" | "WAIT_REPLAY" | "IDLE" | "WAIT";
 
@@ -161,27 +160,16 @@ export const MotionDevTool = ({ children }: { children: React.ReactNode }) => {
           </Debug>
           <PropsForm
             props={toolState.props ?? {}}
+            onReplay={() => send({ type: "REPLAY" })}
             onChange={(path, value) =>
               send({ type: "UPDATE_PROPS", path, value })
             }
           />
-          <Button onClick={() => send({ type: "REPLAY" })}>
-            <ReloadIcon />
-          </Button>
         </ControlPanel>
       )}
     </Context.Provider>
   );
 };
-
-const Button = styled("button", {
-  background: "$gray4",
-  outline: "none",
-  border: "none",
-  padding: "6px",
-  borderRadius: "6px",
-  marginTop: "16px",
-});
 
 const ComponentName = styled("p", {
   marginBottom: "16px",

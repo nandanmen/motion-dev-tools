@@ -1,14 +1,16 @@
-import { useControls } from "leva";
+import { useControls, button } from "leva";
 import _ from "lodash";
 
 type PropsFormProps = {
   props: Record<string, any>;
+  onReplay: () => void;
   onChange: (path: string, value: unknown) => void;
 };
 
 const VALID_PROPS = new Set(["animate", "initial"]);
 
-export function PropsForm({ props, onChange }: PropsFormProps) {
+export function PropsForm({ props, onReplay, onChange }: PropsFormProps) {
+  useControls({ Replay: button(onReplay) });
   const validProps = Object.entries(props).filter(([propName]) =>
     VALID_PROPS.has(propName)
   );
