@@ -1,4 +1,4 @@
-import { Motion } from "./motion";
+import { motion } from "./motion";
 import { styled } from "./stitches";
 import { MotionDevTool } from "./context";
 
@@ -20,7 +20,8 @@ const Main = styled("main", {
   justifyContent: "center",
 });
 
-const Box = styled(Motion, {
+// @ts-expect-error
+const Box = styled(motion.div, {
   width: "10rem",
   height: "10rem",
   borderRadius: "8px",

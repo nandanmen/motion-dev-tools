@@ -45,9 +45,9 @@ TODO
 - `motion` doesn't build all possible html elements; instead, each element is generated using a `createMotionComponent` function and later cached.
   - This means you can't simply iterate over all elements and wrap them
 
-## Notes
+# Notes
 
-### Oct 16 2021
+## Oct 16 2021
 
 I'm able to get a working version that allows me to update the _end_ animation of the component using a slider:
 
@@ -121,7 +121,7 @@ The next two important features are:
 1. Make the API match the default `motion` API (i.e. usable like `motion.div ...`)
 2. Add the ability to update transitions
 
-### Oct 17 2021
+## Oct 17 2021
 
 I've decided to migrate to use [leva](https://github.com/pmndrs/leva) for the control panel off a suggestion by [Maxime](https://twitter.com/MaximeHeckel/status/1449514560684187650). This lets me focus on implementing the motion dev tool instead of worrying about the style of the control panel.
 
@@ -195,3 +195,7 @@ Then, the task of updating the actual prop object is left to the logic that hand
 While I wasn't sure what was causing the initial issue, this refactoring ultimately did solve the problem:
 
 ![](demos/oct-17-2021_working-leva.gif)
+
+### Transition
+
+A big driver behind this project is to be able to easily adjust transitions - so let's implement that.

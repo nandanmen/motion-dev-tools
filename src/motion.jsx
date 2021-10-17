@@ -5,6 +5,13 @@ import { v4 as uuid } from "uuid";
 import { styled } from "./stitches";
 import { useMotionDevToolContext } from "./context";
 
+export const motion = new Proxy(
+  {},
+  {
+    get: (_, prop) => (props) => <Motion as={prop} {...props} />,
+  }
+);
+
 export function Motion({ as = "div", ...props }) {
   const [id] = React.useState(uuid());
   const [key, setKey] = React.useState(uuid());

@@ -11,6 +11,7 @@ const VALID_PROPS = new Set(["animate", "initial"]);
 
 export function PropsForm({ props, onReplay, onChange }: PropsFormProps) {
   useControls({ Replay: button(onReplay) });
+
   const validProps = Object.entries(props).filter(([propName]) =>
     VALID_PROPS.has(propName)
   );
@@ -46,7 +47,7 @@ function PropGroup({ propName, values, onChange }: PropGroupProps) {
       } as any;
 
       if (["x", "y"].includes(key)) {
-        schema.step = 1;
+        schema.step = 2;
       }
 
       return schema;
