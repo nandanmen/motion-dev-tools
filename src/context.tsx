@@ -104,10 +104,10 @@ export const MotionDevTool = ({ children }: { children: React.ReactNode }) => {
             return;
           }
           case "REPLAY": {
-            setToolState({
-              ...toolState,
+            setToolState((state) => ({
+              ...state,
               state: "WAIT_REPLAY",
-            });
+            }));
             return;
           }
           default:
@@ -117,10 +117,10 @@ export const MotionDevTool = ({ children }: { children: React.ReactNode }) => {
       case "WAIT_REPLAY": {
         switch (event.type) {
           case "ANIMATION_DONE": {
-            setToolState({
-              ...toolState,
+            setToolState((state) => ({
+              ...state,
               state: "ACTIVE",
-            });
+            }));
             return;
           }
           default:
