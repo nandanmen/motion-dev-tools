@@ -150,22 +150,13 @@ export const MotionDevTool = ({ children }: { children: React.ReactNode }) => {
     <Context.Provider value={{ ...toolState, send }}>
       {children}
       {isActiveState(toolState.state) && (
-        <ControlPanel
-          animate={{ x: 0, opacity: 1 }}
-          initial={{ x: -20, opacity: 0 }}
-        >
-          <ComponentName>{toolState.name}</ComponentName>
-          <Debug>
-            <pre>{JSON.stringify(toolState, null, 2)}</pre>
-          </Debug>
-          <PropsForm
-            props={toolState.props ?? {}}
-            onReplay={() => send({ type: "REPLAY" })}
-            onChange={(path, value) =>
-              send({ type: "UPDATE_PROPS", path, value })
-            }
-          />
-        </ControlPanel>
+        <PropsForm
+          props={toolState.props ?? {}}
+          onReplay={() => send({ type: "REPLAY" })}
+          onChange={(path, value) =>
+            send({ type: "UPDATE_PROPS", path, value })
+          }
+        />
       )}
     </Context.Provider>
   );

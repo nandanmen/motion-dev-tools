@@ -1,6 +1,8 @@
 import { useControls, button } from "leva";
 import _ from "lodash";
 
+import { TransitionControls } from "./transition-controls";
+
 type PropsFormProps = {
   props: Record<string, any>;
   onReplay: () => void;
@@ -26,6 +28,7 @@ export function PropsForm({ props, onReplay, onChange }: PropsFormProps) {
           onChange={onChange}
         />
       ))}
+      <TransitionControls values={props.transition ?? {}} onChange={onChange} />
     </>
   );
 }
