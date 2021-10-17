@@ -1,8 +1,9 @@
-import { styled } from "./stitches";
+import { useControls } from "leva";
+import _ from "lodash";
 
 type PropsFormProps = {
   props: Record<string, any>;
-  onChange: (newProps: Record<string, any>) => void;
+  onChange: (path: string, value: unknown) => void;
 };
 
 const VALID_PROPS = new Set(["animate", "initial"]);
@@ -13,51 +14,42 @@ export function PropsForm({ props, onChange }: PropsFormProps) {
   );
 
   return (
-    <Form>
-      {validProps.map(([propName, values]) => {
-        return (
-          <Fieldset key={propName}>
-            <Label>{propName}</Label>
-            {Object.entries(values).map(([key, value]) => {
-              return (
-                <Label key={key}>
-                  {key}
-                  <input
-                    type="range"
-                    min={0}
-                    max={120}
-                    value={value as number}
-                    onChange={(evt) =>
-                      onChange({
-                        ...props,
-                        [propName]: {
-                          ...values,
-                          [key]: evt.target.valueAsNumber,
-                        },
-                      })
-                    }
-                  />
-                </Label>
-              );
-            })}
-          </Fieldset>
-        );
-      })}
-    </Form>
+    <>
+      {validProps.map(([propName, value]) => (
+        <PropGroup
+          key={propName}
+          propName={propName}
+          values={value}
+          onChange={onChange}
+        />
+      ))}
+    </>
   );
 }
 
-const Form = styled("form", {
-  "> :not(:last-child)": {
-    marginBottom: "16px",
-  },
-});
+type PropGroupProps = {
+  propName: string;
+  values: object;
+  onChange: (path: string, value: unknown) => void;
+};
 
-const Fieldset = styled("fieldset", {
-  outline: "none",
-  border: "none",
-});
+function PropGroup({ propName, values, onChange }: PropGroupProps) {
+  useControls(
+    propName,
+    _.mapValues(values, (value, key) => {
+      let schema = {
+        value,
+        onChange: (newValue: unknown) =>
+          onChange(`${propName}.${key}`, newValue),
+      } as any;
 
-const Label = styled("label", {
-  display: "block",
-});
+      if (["x", "y"].includes(key)) {
+        schema.step = 1;
+      }
+
+      return schema;
+    })
+  );
+
+  return null;
+}

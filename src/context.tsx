@@ -1,9 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { produce } from "immer";
 
 import { styled } from "./stitches";
 import { PropsForm } from "./props-form";
+import _ from "lodash";
 
 type State = "ACTIVE" | "WAIT_REPLAY" | "IDLE" | "WAIT";
 
@@ -21,8 +23,13 @@ type Event =
       name: string;
     }
   | {
-      type: "UPDATE_PROPS";
+      type: "SET_PROPS";
       props: Record<string, any>;
+    }
+  | {
+      type: "UPDATE_PROPS";
+      path: string;
+      value: unknown;
     }
   | {
       type: "CLOSE";
@@ -63,7 +70,7 @@ export const MotionDevTool = ({ children }: { children: React.ReactNode }) => {
       }
       case "WAIT": {
         switch (event.type) {
-          case "UPDATE_PROPS": {
+          case "SET_PROPS": {
             setToolState({
               ...toolState,
               state: "ACTIVE",
@@ -81,12 +88,20 @@ export const MotionDevTool = ({ children }: { children: React.ReactNode }) => {
             setToolState({ state: "IDLE" });
             return;
           }
-          case "UPDATE_PROPS": {
+          case "SET_PROPS": {
             setToolState({
               ...toolState,
               state: "ACTIVE",
               props: event.props,
             });
+            return;
+          }
+          case "UPDATE_PROPS": {
+            setToolState((state) =>
+              produce(state, (draft) => {
+                _.set(draft, `props.${event.path}`, event.value);
+              })
+            );
             return;
           }
           case "REPLAY": {
@@ -141,9 +156,14 @@ export const MotionDevTool = ({ children }: { children: React.ReactNode }) => {
           initial={{ x: -20, opacity: 0 }}
         >
           <ComponentName>{toolState.name}</ComponentName>
+          <Debug>
+            <pre>{JSON.stringify(toolState, null, 2)}</pre>
+          </Debug>
           <PropsForm
             props={toolState.props ?? {}}
-            onChange={(props) => send({ type: "UPDATE_PROPS", props })}
+            onChange={(path, value) =>
+              send({ type: "UPDATE_PROPS", path, value })
+            }
           />
           <Button onClick={() => send({ type: "REPLAY" })}>
             <ReloadIcon />

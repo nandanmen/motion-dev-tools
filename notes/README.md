@@ -115,3 +115,83 @@ For the sake of this POC, I added a wrapper around the underlying motion compone
 ```
 
 The issue with this is that our custom motion wrapper doesn't render exactly what the original motion component does. This may cause issues if the wrapper expects a certain DOM structure.
+
+The next two important features are:
+
+1. Make the API match the default `motion` API (i.e. usable like `motion.div ...`)
+2. Add the ability to update transitions
+
+### Oct 17 2021
+
+I've decided to migrate to use [leva](https://github.com/pmndrs/leva) for the control panel off a suggestion by [Maxime](https://twitter.com/MaximeHeckel/status/1449514560684187650). This lets me focus on implementing the motion dev tool instead of worrying about the style of the control panel.
+
+> Using a third party lib does mean that I'm limited on what I'm able to control — right now it doesn't look like it's an issue, but this might change in the future.
+
+In order to use Leva, I needed to convert the props of the motion component to the Leva schema:
+
+```ts
+const componentProps = {
+  animate: {
+    y: 0,
+    x: 0
+  },
+  initial: {
+    y: 60,
+    x: 60
+  }
+}
+
+const levaSchema = {
+  animate: {
+    x: {
+      value: 0,
+      onChange: (x) => onChange({ ...props, animate: { ...animate, x } })
+    }
+    ...remainingProps
+  }
+}
+```
+
+I'm running into an issue where the values in the Leva component is not in sync with the motion component's state.
+
+When modifiying one prop, the prop appears to correctly update in the motion context (as seen by the component actually moving in response to the change), but that change doesn't seem to be saved afterwards. When moving a different prop, we see that the prop immediately reverts in context:
+
+![](demos/oct-17-2021_leva-sync-bug.gif)
+
+The problem seems to be caused by a stale reference to the global props object. The solution is to let the context update the tool state while the controls should only concern themselves with the portion of props that they are updating.
+
+More specifically, we previously only had one event for updating props, the `UPDATE_PROPS` event. This event **sets** the context's `props` object to whatever object was passed in the event:
+
+```ts
+setToolState({
+  ...toolState,
+  props: event.props
+})
+```
+
+This meant that whatever component is sending this event needs to know about the _entire_ props object:
+
+```ts
+send({
+  type: "UPDATE_PROPS",
+  props: { ...contextProps, myProp: newValue }
+})
+```
+
+The bug in the demo was caused because the component sending this event had an old reference to the context's props. Whatever was causing this stale reference, I wasn't sure - but either way it felt like the calling component shouldn't know about _all_ of the props being used. It should only concern itself with the slice of props that it's working with.
+
+My solution was to introduce a new event called `SET_PROPS`, and change the old `UPDATE_PROPS` functionality to `SET_PROPS`. Then, `UPDATE_PROPS` becomes an event that allows a component to update a _slice_ of props instead of the whole thing:
+
+```ts
+send({
+  type: "UPDATE_PROPS",
+  path: "animate.x",
+  value: 10
+})
+```
+
+Then, the task of updating the actual prop object is left to the logic that handles the dev tool context.
+
+While I wasn't sure what was causing the initial issue, this refactoring ultimately did solve the problem:
+
+![](demos/oct-17-2021_working-leva.gif)

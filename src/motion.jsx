@@ -16,7 +16,7 @@ export function Motion({ as = "div", ...props }) {
       switch (context.state) {
         case "WAIT": {
           context.send({
-            type: "UPDATE_PROPS",
+            type: "SET_PROPS",
             props,
           });
           break;

@@ -11,11 +11,15 @@
     "@radix-ui/react-icons": "^1.0.3",
     "@stitches/react": "^1.2.5",
     "framer-motion": "^4.1.17",
+    "immer": "^9.0.6",
+    "leva": "^0.9.14",
+    "lodash": "^4.17.21",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.175",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@vitejs/plugin-react": "^1.0.0",
